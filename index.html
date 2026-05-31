@@ -152,22 +152,23 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Robotic perception is fundamentally based on understanding 3D geometry for safe interaction and navigation in complex environments.
-            Occupancy representation, which encodes spatial occupancy states at voxel-level granularity, is a practical substrate for such decisions.
-            However, existing datasets are mostly designed for autonomous driving with vehicle-centric biases (forward-facing cameras, far-field geometry, static road priors).
+            Occupancy prediction at voxel-level granularity is essential for safe robotic navigation and interaction in complex environments.
+            Existing occupancy datasets, however, are predominantly designed for autonomous driving with vehicle-centric biases---forward-facing cameras, far-field geometry, and static road priors---limiting their applicability to embodied humanoid perception.
           </p>
 
           <p>
-            We present <b>Humanoid-OmniOcc</b>, a panoramic stereo-based occupancy dataset tailored for humanoid perception.
-            The dataset is constructed in the Isaac Sim platform with four synchronized stereo pairs mounted around a head-like rig, where it provides full-surround RGB and high-fidelity voxel ground truth via physically-based rendering and multi-view geometric verification.
+            We present <b>Humanoid-OmniOcc</b>, a large-scale panoramic stereo-based occupancy dataset tailored for humanoid robots.
+            Built on NVIDIA Isaac Sim, the dataset captures full-surround RGB via four synchronized stereo pairs mounted on a head-like rig, and provides high-fidelity voxel ground truth with fine-grained semantic annotations across 15 indoor categories through physically-based rendering and multi-view geometric verification.
+            Humanoid-OmniOcc encompasses 15 diverse simulated indoor scenes and 5 real-world environments, yielding over 155K samples with broad scene and style diversity.
           </p>
 
           <p>
-            We further propose <b>OmniStereo</b>, a stereo-guided occupancy prediction network that leverages robust depth priors to enhance 2D-to-3D lifting and BEV reasoning. Experiments demonstrate that OmniStereo outperforms existing surround-view monocular-based methods and generalizes better to diverse environments.
+            Importantly, the dataset is designed around a <b>Real2Sim2Real</b> closed-loop paradigm: real sensor specifications drive physically accurate simulation, simulation produces large-scale annotated training data, and models trained in simulation are directly evaluated on real-world captures---enabling iterative refinement of the sim-to-real pipeline.
           </p>
 
           <p>
-            We hope Humanoid-OmniOcc serves as a foundation for future research in omnidirectional perception, humanoid navigation, and close-range embodied interaction.
+            We further propose <b>OmniStereo</b>, a surround stereo-guided occupancy network that exploits robust depth priors for accurate 2D-to-3D lifting.
+            Extensive experiments show that OmniStereo consistently outperforms monocular baselines and generalizes well to both unseen simulated test scenes and real-world environments, validating the effectiveness of the Real2Sim2Real design.
           </p>
         </div>
       </div>
@@ -185,8 +186,22 @@
         <h2 class="title is-3">Method</h2>
         <div class="content has-text-centered">
           <figure>
-            <img src="./static/images/method.png" alt="Method Illustration" style="max-width: 100%; border-radius: 8px;">
+            <img src="./static/images/compare.png" alt="Method Illustration" style="max-width: 100%; border-radius: 8px;">
 <!--            <figcaption><b>Figure:</b> Overview of the proposed method.</figcaption>-->
+          </figure>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            <b>Comparison of different 3D perception paradigms.</b>
+            <b>Top:</b> Monocular-based model.
+            <b>Middle:</b> Multi-sensor fusion model.
+            <b>Bottom:</b> Our proposed stereo-based model.
+          </p>
+        </div>
+
+        <div class="content has-text-centered">
+          <figure>
+            <img src="./static/images/method.png" alt="OmniStereo Pipeline" style="max-width: 100%; border-radius: 8px;">
           </figure>
         </div>
         <div class="content has-text-justified">
@@ -201,23 +216,6 @@
             Finally, an occupancy head predicts the 3D occupancy grid from the camera voxel features.
           </p>
         </div>
-
-        <div class="content has-text-centered">
-          <figure>
-            <img src="./static/images/figure4.png" alt="Method Illustration" style="max-width: 50%; border-radius: 8px;">
-<!--            <figcaption><b>Figure:</b> Overview of the proposed method.</figcaption>-->
-          </figure>
-        </div>
-        <div class="content has-text-justified">
-          <p>
-            Comparison between <b>Disparity-to-Depth Volume Model (DDVM)</b>
-            and <b>Stereo Depth Network (SDN)</b> .
-            The DDVM (top) first constructs a disparity cost volume and converts it into depth space
-            through a channel mapping stage, while the SDN (bottom) directly builds a depth-oriented
-            cost volume and performs 3D CNN with softmax regression to predict metric depth.
-          </p>
-
-
       </div>
     </div>
   </div>
@@ -230,26 +228,38 @@
         <h2 class="title is-3">Experiment</h2>
         <div class="content has-text-centered">
           <figure>
-            <img src="./static/images/figure5.png" alt="Method Illustration" style="max-width: 100%; border-radius: 8px;">
+            <img src="./static/images/table3.png" alt="Method Illustration" style="max-width: 100%; border-radius: 8px;">
 <!--            <figcaption><b>Figure:</b> Overview of the proposed method.</figcaption>-->
           </figure>
         </div>
         <div class="content has-text-justified">
           <p>
-            <strong>Quantitative comparison on the validation set.</strong>
-            IOU, Pre, and Rec denote <strong>Intersection over Union</strong>,
-            <strong>Precision</strong>, and <strong>Recall</strong>, respectively.
+            <strong>Semantic occupancy prediction results on the test sets and in the real world.</strong>
+            We report per-class IoU and mIoU (%).
           </p>
         </div>
 
         <div class="content has-text-centered">
           <figure>
-            <img src="./static/images/figure6.png" alt="Method Illustration" style="max-width: 100%; border-radius: 8px;">
+            <img src="./static/images/table4.png" alt="Method Illustration" style="max-width: 100%; border-radius: 8px;">
 <!--            <figcaption><b>Figure:</b> Overview of the proposed method.</figcaption>-->
           </figure>
         </div>
         <div class="content has-text-justified">
-          <p>Quantitative comparison on the <strong>test set</strong>.</p>
+          <p>
+            <strong>Ablation Study on Disparity-to-Depth:</strong> DDVM vs. SDN.
+          </p>
+        </div>
+
+        <div class="content has-text-centered">
+          <figure>
+            <img src="./static/images/table5.png" alt="Stereo Module Ablation Study" style="max-width: 100%; border-radius: 8px;">
+          </figure>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            <strong>Ablation Study on Stereo module.</strong>
+          </p>
         </div>
 
       </div>
@@ -261,166 +271,26 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
+        <h2 class="title is-3">Qualitative Results</h2>
 
         <div class="content has-text-centered">
-          <video
-            controls
-            autoplay
-            muted
-            loop
-            playsinline
-            style="width:100%; border-radius:10px;"
-          >
-            <source src="./static/videos/real.mp4" type="video/mp4">
-          </video>
+          <figure>
+            <img src="./static/images/fig5.png" alt="Qualitative Comparisons" style="max-width: 100%; border-radius: 8px;">
+          </figure>
         </div>
 
         <div class="content has-text-justified">
           <p>
-            Qualitative results of <b>Humanoid-OmniOcc</b>.
-            The video demonstrates full-surround stereo perception in real indoor scenes.
+            <b>Qualitative comparisons on the <b>test set</b> (first row) and <b>real-world</b> scenes (rows 2&ndash;3).</b>
+            The first column shows the left images from the four stereo pairs
+            (<i>front</i>, <i>back</i>, <i>left</i>, and <i>right</i>).
           </p>
         </div>
       </div>
     </div>
   </div>
 </section>
-<!--<section class="section">-->
-<!--  <div class="container is-max-desktop">-->
 
-<!--    <div class="columns is-centered">-->
-
-<!--      &lt;!&ndash; Visual Effects. &ndash;&gt;-->
-<!--      <div class="column">-->
-<!--        <div class="content">-->
-<!--          <h2 class="title is-3">Visual Effects</h2>-->
-<!--          <p>-->
-<!--            Using <i>nerfies</i> you can create fun visual effects. This Dolly zoom effect-->
-<!--            would be impossible without nerfies since it would require going through a wall.-->
-<!--          </p>-->
-<!--          <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">-->
-<!--            <source src="./static/videos/dollyzoom-stacked.mp4"-->
-<!--                    type="video/mp4">-->
-<!--          </video>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      &lt;!&ndash;/ Visual Effects. &ndash;&gt;-->
-
-<!--      &lt;!&ndash; Matting. &ndash;&gt;-->
-<!--      <div class="column">-->
-<!--        <h2 class="title is-3">Matting</h2>-->
-<!--        <div class="columns is-centered">-->
-<!--          <div class="column content">-->
-<!--            <p>-->
-<!--              As a byproduct of our method, we can also solve the matting problem by ignoring-->
-<!--              samples that fall outside of a bounding box during rendering.-->
-<!--            </p>-->
-<!--            <video id="matting-video" controls playsinline height="100%">-->
-<!--              <source src="./static/videos/matting.mp4"-->
-<!--                      type="video/mp4">-->
-<!--            </video>-->
-<!--          </div>-->
-
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    &lt;!&ndash;/ Matting. &ndash;&gt;-->
-
-<!--    &lt;!&ndash; Animation. &ndash;&gt;-->
-<!--    <div class="columns is-centered">-->
-<!--      <div class="column is-full-width">-->
-<!--        <h2 class="title is-3">Animation</h2>-->
-
-<!--        &lt;!&ndash; Interpolating. &ndash;&gt;-->
-<!--        <h3 class="title is-4">Interpolating states</h3>-->
-<!--        <div class="content has-text-justified">-->
-<!--          <p>-->
-<!--            We can also animate the scene by interpolating the deformation latent codes of two input-->
-<!--            frames. Use the slider here to linearly interpolate between the left frame and the right-->
-<!--            frame.-->
-<!--          </p>-->
-<!--        </div>-->
-<!--        <div class="columns is-vcentered interpolation-panel">-->
-<!--          <div class="column is-3 has-text-centered">-->
-<!--            <img src="./static/images/interpolate_start.jpg"-->
-<!--                 class="interpolation-image"-->
-<!--                 alt="Interpolate start reference image."/>-->
-<!--            <p>Start Frame</p>-->
-<!--          </div>-->
-<!--          <div class="column interpolation-video-column">-->
-<!--            <div id="interpolation-image-wrapper">-->
-<!--              Loading...-->
-<!--            </div>-->
-<!--            <input class="slider is-fullwidth is-large is-info"-->
-<!--                   id="interpolation-slider"-->
-<!--                   step="1" min="0" max="100" value="0" type="range">-->
-<!--          </div>-->
-<!--          <div class="column is-3 has-text-centered">-->
-<!--            <img src="./static/images/interpolate_end.jpg"-->
-<!--                 class="interpolation-image"-->
-<!--                 alt="Interpolation end reference image."/>-->
-<!--            <p class="is-bold">End Frame</p>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <br/>-->
-<!--        &lt;!&ndash;/ Interpolating. &ndash;&gt;-->
-
-<!--        &lt;!&ndash; Re-rendering. &ndash;&gt;-->
-<!--        <h3 class="title is-4">Re-rendering the input video</h3>-->
-<!--        <div class="content has-text-justified">-->
-<!--          <p>-->
-<!--            Using <span class="dnerf">Nerfies</span>, you can re-render a video from a novel-->
-<!--            viewpoint such as a stabilized camera by playing back the training deformations.-->
-<!--          </p>-->
-<!--        </div>-->
-<!--        <div class="content has-text-centered">-->
-<!--          <video id="replay-video"-->
-<!--                 controls-->
-<!--                 muted-->
-<!--                 preload-->
-<!--                 playsinline-->
-<!--                 width="75%">-->
-<!--            <source src="./static/videos/replay.mp4"-->
-<!--                    type="video/mp4">-->
-<!--          </video>-->
-<!--        </div>-->
-<!--        &lt;!&ndash;/ Re-rendering. &ndash;&gt;-->
-
-<!--      </div>-->
-<!--    </div>-->
-<!--    &lt;!&ndash;/ Animation. &ndash;&gt;-->
-
-
-<!--    &lt;!&ndash; Concurrent Work. &ndash;&gt;-->
-<!--    <div class="columns is-centered">-->
-<!--      <div class="column is-full-width">-->
-<!--        <h2 class="title is-3">Related Links</h2>-->
-
-<!--        <div class="content has-text-justified">-->
-<!--          <p>-->
-<!--            There's a lot of excellent work that was introduced around the same time as ours.-->
-<!--          </p>-->
-<!--          <p>-->
-<!--            <a href="https://arxiv.org/abs/2104.09125">Progressive Encoding for Neural Optimization</a> introduces an idea similar to our windowed position encoding for coarse-to-fine optimization.-->
-<!--          </p>-->
-<!--          <p>-->
-<!--            <a href="https://www.albertpumarola.com/research/D-NeRF/index.html">D-NeRF</a> and <a href="https://gvv.mpi-inf.mpg.de/projects/nonrigid_nerf/">NR-NeRF</a>-->
-<!--            both use deformation fields to model non-rigid scenes.-->
-<!--          </p>-->
-<!--          <p>-->
-<!--            Some works model videos with a NeRF by directly modulating the density, such as <a href="https://video-nerf.github.io/">Video-NeRF</a>, <a href="https://www.cs.cornell.edu/~zl548/NSFF/">NSFF</a>, and <a href="https://neural-3d-video.github.io/">DyNeRF</a>-->
-<!--          </p>-->
-<!--          <p>-->
-<!--            There are probably many more by the time you are reading this. Check out <a href="https://dellaert.github.io/NeRF/">Frank Dellart's survey on recent NeRF papers</a>, and <a href="https://github.com/yenchenlin/awesome-NeRF">Yen-Chen Lin's curated list of NeRF papers</a>.-->
-<!--          </p>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    &lt;!&ndash;/ Concurrent Work. &ndash;&gt;-->
-
-<!--  </div>-->
-<!--</section>-->
 
 
 <section class="section" id="BibTeX">
@@ -430,7 +300,7 @@
   author    = {Xianda Guo, Bohao Zhang, Chenwei Huang, Shiyuan Chen, Ruilin Wang, Yiqun Duan, Cong Yang, Qin Zou, Wei Sui},
   title     = {Humanoid-OmniOcc: Stereo-Based Full-View Occupancy Dataset for Embodied AI},
   journal   = {XXX},
-  year      = {2025},
+  year      = {2026},
 }</code></pre>
   </div>
 </section>
